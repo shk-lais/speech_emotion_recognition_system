@@ -31,10 +31,15 @@ def index():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
 
+            # Extract features and predict
             features = extract_mfcc(filepath).reshape(1, -1)
             pred = model.predict(features)
             prediction = lb.inverse_transform([np.argmax(pred)])[0]
             filename = file.filename
+
+            # Delete the uploaded file after processing
+            if os.path.exists(filepath):
+                os.remove(filepath)
 
     return render_template('index.html', prediction=prediction, filename=filename)
 
